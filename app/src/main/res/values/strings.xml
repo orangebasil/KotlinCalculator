@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">KotlinCalculator</string>
+    <string name="button_allclear">AC</string>
+    <string name="button_clear">C</string>
+    <string name="button_plusminus">+/-</string>
+    <string name="button_percent">％</string>
+    <string name="button_division">÷</string>
+    <string name="buttton_multiplication">×</string>
+    <string name="buttton_addition">＋</string>
+    <string name="buttton_subtraction">−</string>
+    <string name="buttton_equal">＝</string>
+    <string name="buttton_decimal">.</string>
+    <string name="buttton_0">０</string>
+    <string name="buttton_1">１</string>
+    <string name="buttton_2">２</string>
+    <string name="buttton_3">３</string>
+    <string name="buttton_4">４</string>
+    <string name="buttton_5">５</string>
+    <string name="buttton_6">６</string>
+    <string name="buttton_7">７</string>
+    <string name="buttton_8">８</string>
+    <string name="buttton_9">９</string>
 </resources>
