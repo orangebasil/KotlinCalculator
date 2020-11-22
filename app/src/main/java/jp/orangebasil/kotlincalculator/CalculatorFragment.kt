@@ -7,40 +7,43 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.Observer
+import jp.orangebasil.kotlincalculator.databinding.FragmentCalculatorBinding
 
 class CalculatorFragment : Fragment() {
 
-    private val calculator = Calculator()
+    private lateinit var binding: FragmentCalculatorBinding
+
+    private val viewModel: CalculatorViewModel = CalculatorViewModel()
+
+    private val calculator = Calculator(this.viewModel)
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calculator, container, false)
+        binding = FragmentCalculatorBinding.inflate(inflater, container, false)
+        binding.vm = this.viewModel
+        binding.lifecycleOwner = this
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val textResult = this.view!!.findViewById<TextView>(R.id.textview_result)
-        calculator.setOnResult { textResult.setText(it) }
-
-        var buttonAllClear: Button = this.view!!.findViewById<Button>(R.id.button_allclear)
-        var buttonClear: Button = this.view!!.findViewById<Button>(R.id.button_clear)
-
-        buttonAllClear.setOnClickListener { this.calculator.push(Calculator.Input.ALLCLEAR) }
-        buttonClear.setOnClickListener { this.calculator.push(Calculator.Input.CLEAR) }
-
-        calculator.setOnActivatedAllClear {
+        viewModel.activatedAllClear.observe(viewLifecycleOwner, Observer {
             if (it) {
-                buttonAllClear.visibility = View.VISIBLE
-                buttonClear.visibility = View.INVISIBLE
+                binding.buttonAllclear.visibility = View.VISIBLE
+                binding.buttonClear.visibility = View.INVISIBLE
             } else {
-                buttonAllClear.visibility = View.INVISIBLE
-                buttonClear.visibility = View.VISIBLE
+                binding.buttonAllclear.visibility = View.INVISIBLE
+                binding.buttonClear.visibility = View.VISIBLE
             }
-        }
+        })
+
+        this.view!!.findViewById<Button>(R.id.button_allclear).setOnClickListener { this.calculator.push(Calculator.Input.ALLCLEAR) }
+        this.view!!.findViewById<Button>(R.id.button_clear).setOnClickListener { this.calculator.push(Calculator.Input.CLEAR) }
 
         this.view!!.findViewById<Button>(R.id.button_division).setOnClickListener { this.calculator.push(Calculator.Input.DIVISION) }
         this.view!!.findViewById<Button>(R.id.button_multiplication).setOnClickListener { this.calculator.push(Calculator.Input.MULTIPLICATION) }
