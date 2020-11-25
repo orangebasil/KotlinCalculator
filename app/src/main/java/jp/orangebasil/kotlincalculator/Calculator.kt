@@ -6,7 +6,7 @@ import java.math.MathContext
 import java.math.RoundingMode
 
 
-class Calculator(viewModel: CalculatorViewModel) {
+class Calculator(model: ICalculatorModel) {
 
     enum class Input {
         ALLCLEAR, CLEAR, ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION, EQUAL, PERCENT, PLUSMINUS, DECIMAL,
@@ -29,7 +29,7 @@ class Calculator(viewModel: CalculatorViewModel) {
 
     private var resolvedValue: BigDecimal? = null
 
-    private var viewModel: CalculatorViewModel = viewModel
+    private var model: ICalculatorModel = model
 
     /*
      * Invalid
@@ -56,7 +56,7 @@ class Calculator(viewModel: CalculatorViewModel) {
         when {
             // (1)
             (this.state == State.Invalid && next == State.Started) -> {
-                this.viewModel.resultText.value = "0"
+                this.model.setResultText("0")
             }
 
             // (2)
@@ -66,7 +66,7 @@ class Calculator(viewModel: CalculatorViewModel) {
 
             // (3)
             (this.state == State.Input1st && next == State.InputOperation) -> {
-                this.fixedValue1st= BigDecimal(this.viewModel.resultText.value)
+                this.fixedValue1st= BigDecimal(this.model.getResultText())
             }
 
             // (4)
@@ -77,15 +77,15 @@ class Calculator(viewModel: CalculatorViewModel) {
 
             // (5)
             (this.state == State.Input2nd && next == State.Resolved) -> {
-                this.fixedValue2nd= BigDecimal(this.viewModel.resultText.value)
+                this.fixedValue2nd= BigDecimal(this.model.getResultText())
                 execute()
 
-                this.viewModel.resultText.value = this.resolvedValue.toString()
+                this.model.setResultText(this.resolvedValue.toString())
             }
 
             // (6)
             (this.state == State.Input2nd && next == State.InputOperation) -> {
-                this.fixedValue2nd = BigDecimal(this.viewModel.resultText.value)
+                this.fixedValue2nd = BigDecimal(this.model.getResultText())
                 execute()
 
                 this.fixedOperator = Operator.INVALID
@@ -119,7 +119,7 @@ class Calculator(viewModel: CalculatorViewModel) {
 
     fun start(): Boolean {
         switchState(State.Started)
-        this.viewModel.activatedAllClear.value = true
+        this.model.setActivatedAllClear(true)
         return true
     }
 
@@ -165,40 +165,40 @@ class Calculator(viewModel: CalculatorViewModel) {
     }
 
     private fun pushNumber(v: Int) {
-        var tmpStr = "${this.viewModel.resultText.value}${v.toString()}"
+        var tmpStr = "${this.model.getResultText()}${v.toString()}"
 
         if (this.state == State.Started || this.state == State.InputOperation || this.state == State.Resolved) {
             tmpStr = v.toString()
         }
 
         val afterValue: BigDecimal = BigDecimal(tmpStr)
-        val beforeValue: BigDecimal = BigDecimal(this.viewModel.resultText.value)
+        val beforeValue: BigDecimal = BigDecimal(this.model.getResultText())
         if (beforeValue.equals(afterValue) || !isSupportedNumber(afterValue)) return
 
-        this.viewModel.resultText.value = afterValue.toString()
+        this.model.setResultText(afterValue.toString())
 
-        this.viewModel.activatedAllClear.value = false
+        this.model.setActivatedAllClear(false)
         switchToInputIfNeeded()
     }
 
     private fun toDecimal() {
-        var tmpStr = this.viewModel.resultText.value as String
+        var tmpStr = this.model.getResultText()
         if (!tmpStr.contains(".")) {
             tmpStr += "."
         }
 
-        this.viewModel.resultText.value = tmpStr
+        this.model.setResultText(tmpStr)
 
         switchToInputIfNeeded()
     }
 
     private fun applyFormula(f: (currValue: BigDecimal) -> BigDecimal) {
-        var currValue = BigDecimal(this.viewModel.resultText.value)
+        var currValue = BigDecimal(this.model.getResultText())
         var nextValue = f(currValue)
 
         if (!isSupportedNumber(nextValue)) nextValue = BigDecimal(0)
 
-        this.viewModel.resultText.value = nextValue.toString()
+        this.model.setResultText(nextValue.toString())
 
         switchToInputIfNeeded()
     }
@@ -211,9 +211,9 @@ class Calculator(viewModel: CalculatorViewModel) {
         }
     }
 
-    private fun isSupportedNumber(n: BigDecimal): Boolean {
+    fun isSupportedNumber(n: BigDecimal): Boolean {
         if (n.scale() >= 10) return false;
-        if (n > BigDecimal(10000000000)) return false
+        if (n.abs() > BigDecimal(10000000000)) return false
 
         return true
     }
@@ -222,16 +222,15 @@ class Calculator(viewModel: CalculatorViewModel) {
         this.fixedValue1st = null
         this.fixedValue2nd = null
         this.resolvedValue = null
-        this.viewModel.resultText.value = "0"
+        this.model.setResultText("0")
         editableOperator = Operator.INVALID
         fixedOperator = Operator.INVALID
     }
 
     private fun clear() {
         this.resolvedValue = null
-        this.viewModel.resultText.value = "0"
-
-        this.viewModel.activatedAllClear.value = true
+        this.model.setResultText("0")
+        this.model.setActivatedAllClear(true)
     }
 
     private fun execute() {
@@ -253,6 +252,6 @@ class Calculator(viewModel: CalculatorViewModel) {
         }
 
         this.resolvedValue = resultValue
-        this.viewModel.resultText.value = resultValue.toPlainString()
+        this.model.setResultText(resultValue.toPlainString())
     }
 }

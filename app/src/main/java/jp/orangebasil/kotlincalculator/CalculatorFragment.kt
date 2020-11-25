@@ -32,7 +32,7 @@ class CalculatorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.activatedAllClear.observe(viewLifecycleOwner, Observer {
+        viewModel.activatedAllClearAsLD.observe(viewLifecycleOwner, Observer {
             if (it) {
                 binding.buttonAllclear.visibility = View.VISIBLE
                 binding.buttonClear.visibility = View.INVISIBLE

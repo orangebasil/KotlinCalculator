@@ -26,7 +26,7 @@
             android:textAlignment="textEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="30sp"
-            android:text="@{vm.resultText}"
+            android:text="@{vm.resultTextAsLD}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
